@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react';
 
 export const PageContainer: React.FC<{ onClick: () => void }> = ({
   onClick,
@@ -10,5 +10,5 @@ export const PageContainer: React.FC<{ onClick: () => void }> = ({
         {children}
       </Box>
     </Flex>
-  )
-}
+  );
+};
