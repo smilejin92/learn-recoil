@@ -9,7 +9,13 @@ type Position = {
   bottom?: number | string
 }
 
-export const Handle = ({ placement, visible }: { placement: ResizeHandle; visible: boolean }) => {
+export const Handle = ({
+  placement,
+  visible,
+}: {
+  placement: ResizeHandle
+  visible: boolean
+}) => {
   const size = 10
 
   const position: Position = {}
