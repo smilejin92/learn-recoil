@@ -1,7 +1,14 @@
 import { Container, Heading, Text } from '@chakra-ui/layout';
 import { Select } from '@chakra-ui/select';
 import { Suspense, useState } from 'react';
-import { selectorFamily, useRecoilValue } from 'recoil';
+import {
+  atom,
+  atomFamily,
+  selectorFamily,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil';
+import { getWeather } from './fakeAPI';
 
 /**
  * selector vs. selectorFamily
@@ -27,10 +34,63 @@ const userState = selectorFamily({
   },
 });
 
+const weatherRequestIdState = atomFamily({
+  key: 'weatherRequestId',
+  default: 0,
+});
+
+const useRefetchWeather = (userId: number) => {
+  const setWeatherRequestId = useSetRecoilState(weatherRequestIdState(userId));
+  return () => {
+    setWeatherRequestId((id) => id + 1);
+  };
+};
+
+// depends on userState (above)
+// 만약 refetch해야 할 경우 requestId 디펜던시를 추가하여 requestId가 바뀔 때, refetch될 수 있도록 한다
+const weatherState = selectorFamily({
+  key: 'weather',
+  get:
+    (userId: number) =>
+    async ({ get }) => {
+      // refetch를 위해 dependency 추가
+      get(weatherRequestIdState(userId));
+
+      // userState selector는 async 함수이지만, 이 곳에서 await하지 않는다.
+      // recoil은 userState가 response를 resolve 할 때까지 기다린 후 이 곳에서 사용한다.
+      const user = get(userState(userId)); // userState
+
+      const weather = await getWeather(user.address.city);
+      return weather;
+    },
+});
+
+const UserWeather = ({ userId }: { userId: number }) => {
+  // recoil state를 중복으로 subscribe해도 문제가 없다.
+  // async selector의 경우 중복 요청이 아닌 캐시된 데이터를 사용한다.
+  const user = useRecoilValue(userState(userId));
+  const weather = useRecoilValue(weatherState(userId));
+  const refetchWeather = useRefetchWeather(userId);
+
+  return (
+    <div>
+      <Text>
+        <b>Weather for {user.address.city}:</b> {weather}
+      </Text>
+      <Text onClick={refetchWeather}>(refresh weather)</Text>
+    </div>
+  );
+};
+
 // Suspense 사용 시 컴포넌트 자체를 감싸야함
 // async selector를 사용하는 컴포넌트는 Suspense로 감싸야함 (MUST)
+// async selector가 2개 이상이어도 Suspense 컴포넌트 안에 위치한다면,
+// 2개 이상의 비동기 요청이 성공 할 때까지 fallback 컴포넌트를 표시
 const UserData = ({ userId }: { userId: number }) => {
+  // userState와 weatherState 모두 userData를 fetch하지만, 실질적으로 요청은 1회 발생한다.
+  // userState에서 데이터를 fetch해오면, weatherState에서 캐싱된 데이터를 사용한다.
   const user = useRecoilValue(userState(userId));
+  // const weather = useRecoilValue(weatherState(userId));
 
   return (
     <div>
@@ -43,6 +103,9 @@ const UserData = ({ userId }: { userId: number }) => {
       <Text>
         <b>Phone:</b> {user.phone}
       </Text>
+      <Suspense fallback={<div>Loading Weather...</div>}>
+        <UserWeather userId={userId} />
+      </Suspense>
     </div>
   );
 };
