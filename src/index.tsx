@@ -7,7 +7,6 @@ import { RecoilRoot } from 'recoil';
 import { Atoms } from './examples/Atoms';
 import { Selectors } from './examples/Selectors';
 import { Async } from './examples/Async';
-import { Suspense } from 'react';
 
 ReactDOM.render(
   <RecoilRoot>

@@ -2,7 +2,6 @@ import { Container, Heading, Text } from '@chakra-ui/layout';
 import { Select } from '@chakra-ui/select';
 import { Suspense, useState } from 'react';
 import {
-  atom,
   atomFamily,
   selectorFamily,
   useRecoilValue,
