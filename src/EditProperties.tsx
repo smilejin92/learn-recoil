@@ -25,7 +25,10 @@ import produce from 'immer';
  */
 
 // <returnType, paramsType>
-const editPropertyState = selectorFamily<number, { path: string; id: number }>({
+export const editPropertyState = selectorFamily<
+  any,
+  { path: string; id: number }
+>({
   key: 'editProperty',
   // path: serializable value - element 객체의 특정 property를 참조하기 위한 string(ex. 'foo.bar')
   get:
