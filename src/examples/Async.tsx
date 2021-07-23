@@ -1,6 +1,8 @@
 import { Container, Heading, Text } from '@chakra-ui/layout';
+import { Button } from '@chakra-ui/react';
 import { Select } from '@chakra-ui/select';
 import { Suspense, useState } from 'react';
+import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import {
   atomFamily,
   selectorFamily,
@@ -28,6 +30,11 @@ const userState = selectorFamily({
     const userData = await fetch(
       `https://jsonplaceholder.typicode.com/users/${userId}`,
     ).then((response) => response.json());
+
+    // 만약 요청에 실패 할 경우 어떻게 되는가? - ErrorBoundary 사용
+    if (userId === 4) {
+      throw new Error('User does not exist');
+    }
 
     return userData;
   },
@@ -88,7 +95,7 @@ const UserWeather = ({ userId }: { userId: number }) => {
 const UserData = ({ userId }: { userId: number }) => {
   // userState와 weatherState 모두 userData를 fetch하지만, 실질적으로 요청은 1회 발생한다.
   // userState에서 데이터를 fetch해오면, weatherState에서 캐싱된 데이터를 사용한다.
-  const user = useRecoilValue(userState(userId));
+  const user = useRecoilValue(userState(userId)); // error 발생 시 error가 throw된다.
   // const weather = useRecoilValue(weatherState(userId));
 
   return (
@@ -105,6 +112,19 @@ const UserData = ({ userId }: { userId: number }) => {
       <Suspense fallback={<div>Loading Weather...</div>}>
         <UserWeather userId={userId} />
       </Suspense>
+    </div>
+  );
+};
+
+const ErrorFallBack = ({ error, resetErrorBoundary }: FallbackProps) => {
+  return (
+    <div>
+      <Heading as="h2" size="md" mb={1}>
+        Something went wrong
+      </Heading>
+      <Text>{error.message}</Text>
+      {/* resetErrorBoundary 호출 시 에러가 발생한 컴포넌트를 다시 렌더링한다. */}
+      <Button onClick={resetErrorBoundary}>OK</Button>
     </div>
   );
 };
@@ -132,11 +152,23 @@ export const Async = () => {
         <option value="1">User 1</option>
         <option value="2">User 2</option>
         <option value="3">User 3</option>
+        <option value="4">User 4</option>
       </Select>
       {userId !== undefined && (
-        <Suspense fallback={<div>Loading...</div>}>
-          <UserData userId={userId} />
-        </Suspense>
+        // Error 발생 시 ErrorBoundary 하위의 컴포넌트만 unmount되고, fallback 컴포넌트가 렌더된다.
+        <ErrorBoundary
+          FallbackComponent={ErrorFallBack}
+          onReset={() => {
+            // resetErrorBoundary 호출 시 onReset 함수 호출. 사용자가 선택되어있지 않은 상태로 복구
+            setUserId(undefined);
+          }}
+          // restKeys에 전달한 key 목록의 아이템 값이 변경되면 ErrorBoundary 하위의 컴포넌트를 remount 시도한다.
+          resetKeys={[userId]}
+        >
+          <Suspense fallback={<div>Loading...</div>}>
+            <UserData userId={userId} />
+          </Suspense>
+        </ErrorBoundary>
       )}
     </Container>
   );
