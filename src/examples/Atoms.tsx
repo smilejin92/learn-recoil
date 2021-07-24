@@ -6,7 +6,7 @@ import { atom, useRecoilState, useRecoilValue } from 'recoil';
  */
 const darkModeAtom = atom({
   /**
-   * key labels this specific atom (persister에서도 사용)
+   * key labels this specific atom (persister 사용 시 중요)
    * must be serializable value and unique
    */
   key: 'darkMode',
@@ -17,7 +17,6 @@ const darkModeAtom = atom({
 const DarkModeSwitch = () => {
   // setDarkMode는 darkModeAtom의 value를 update
   const [darkMode, setDarkMode] = useRecoilState(darkModeAtom);
-
   return <input type="checkbox" checked={darkMode} onChange={(event) => setDarkMode(event.currentTarget.checked)} />;
 };
 

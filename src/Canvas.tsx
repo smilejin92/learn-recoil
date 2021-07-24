@@ -1,24 +1,13 @@
-import { atom, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { elementIdsAtom, selectedElementIdAtom } from './atoms';
 import { Rectangle } from './components/Rectangle/Rectangle';
 import { EditProperties } from './EditProperties';
 import { PageContainer } from './PageContainer';
 import { Toolbar } from './Toolbar';
 
-// 선택된 Rectangle의 id
-export const selectedElementState = atom<number | null>({
-  key: 'selectedElement',
-  default: null,
-});
-
-// 모든 Rectangle의 id
-export const elementsState = atom<number[]>({
-  key: 'elements',
-  default: [],
-});
-
 function Canvas() {
-  const setSelectedElement = useSetRecoilState(selectedElementState);
-  const elements = useRecoilValue(elementsState);
+  const setSelectedElement = useSetRecoilState(selectedElementIdAtom);
+  const elementIds = useRecoilValue(elementIdsAtom);
 
   return (
     <PageContainer
@@ -28,7 +17,7 @@ function Canvas() {
     >
       <Toolbar />
       <EditProperties />
-      {elements.map((id) => (
+      {elementIds.map((id) => (
         <Rectangle key={id} id={id} />
       ))}
     </PageContainer>

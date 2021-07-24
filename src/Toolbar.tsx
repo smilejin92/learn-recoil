@@ -1,20 +1,19 @@
 import { Icon, IconButton, VStack } from '@chakra-ui/react';
 import { Square, Image } from 'react-feather';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
-import { elementsState } from './Canvas';
-import { defaultElement, elementState } from './components/Rectangle/Rectangle';
+import { defaultElement, elementAtom, elementIdsAtom } from './atoms';
 import { getRandomImage } from './util';
 
 export const Toolbar = () => {
-  const elements = useRecoilValue(elementsState);
-  const newId = elements.length;
+  const elementIds = useRecoilValue(elementIdsAtom);
+  const newId = elementIds.length;
 
-  // 아이템 추가 시, elementsState와 elementState(id)의 상태를 업데이트
+  // 아이템 추가 시, elementsState와 elementAtom(id)의 상태를 업데이트
   const insertElement = useRecoilCallback(({ set }) => (type: 'rectangle' | 'image') => {
-    set(elementsState, (e) => [...e, e.length]);
+    set(elementIdsAtom, (e) => [...e, e.length]);
 
     if (type === 'image') {
-      set(elementState(newId), {
+      set(elementAtom(newId), {
         ...defaultElement,
         image: getRandomImage(),
       });

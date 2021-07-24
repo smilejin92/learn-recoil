@@ -1,23 +1,13 @@
 import { Box } from '@chakra-ui/react';
 import { useEffect } from 'react';
-import { selectorFamily, useRecoilValue, useSetRecoilState } from 'recoil';
-import { editPropertyState } from '../../EditProperties';
-import { getBorderColor, getImageDimensions } from '../../util';
-import { elementState } from './Rectangle';
-
-const imageSizeState = selectorFamily({
-  key: 'imageSize',
-  // async selector이지만, Promise가 resolve 될 때까지 알아서 기다려줌
-  get: (src: string | undefined) => () => {
-    if (!src) return;
-    return getImageDimensions(src);
-  },
-});
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { elementAtom, elementPropsSelector, imageSizeSelector } from '../../atoms';
+import { getBorderColor } from '../../util';
 
 export const RectangleInner = ({ selected, id }: { selected: boolean; id: number }) => {
-  const element = useRecoilValue(elementState(id));
-  const imageSize = useRecoilValue(imageSizeState(element.image?.src));
-  const setSize = useSetRecoilState(editPropertyState({ path: 'style.size', id }));
+  const element = useRecoilValue(elementAtom(id));
+  const imageSize = useRecoilValue(imageSizeSelector(element.image?.src));
+  const setSize = useSetRecoilState(elementPropsSelector({ propPath: 'style.size', id }));
 
   useEffect(() => {
     if (!imageSize) return;

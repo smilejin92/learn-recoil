@@ -16,12 +16,13 @@ import { getWeather } from './fakeAPI';
  */
 
 // atom을 사용한 state가 아니라면(ex. redux state, react state) selectorFamily의 params로 전달 할 수 있다.
-const userState = selectorFamily({
+const userSelector = selectorFamily({
   key: 'user',
   // async selector는 최초 반환한 값을 자동으로 캐싱한다. 따라서, userId = 1을 2번 요청하면, 2번째 요청은 최초 캐시된 데이터로 대체된다 (요청 X)
   // race condition을 자동으로 처리한다 (ex. fetch user1 -> fetch user2 -> fetching user1 cancelled)
   get: (userId: number) => async () => {
     // Uncaught Error: Async suspended while rendering, but no fallback UI was specified.
+    // async selector를 사용하는 컴포넌트는 Suspense 컴포넌트로 감싸주어야한다.
     const userData = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`).then((response) =>
       response.json(),
     );
@@ -35,31 +36,32 @@ const userState = selectorFamily({
   },
 });
 
-const weatherRequestIdState = atomFamily({
+const weatherRequestIdAtom = atomFamily({
   key: 'weatherRequestId',
   default: 0,
 });
 
+// custom hook
 const useRefetchWeather = (userId: number) => {
-  const setWeatherRequestId = useSetRecoilState(weatherRequestIdState(userId));
+  const setWeatherRequestId = useSetRecoilState(weatherRequestIdAtom(userId));
   return () => {
     setWeatherRequestId((id) => id + 1);
   };
 };
 
-// depends on userState (above)
+// depends on userSelector (above)
 // 만약 refetch해야 할 경우 requestId 디펜던시를 추가하여 requestId가 바뀔 때, refetch될 수 있도록 한다
-const weatherState = selectorFamily({
+const weatherSelector = selectorFamily({
   key: 'weather',
   get:
     (userId: number) =>
     async ({ get }) => {
-      // refetch를 위해 dependency 추가
-      get(weatherRequestIdState(userId));
+      // refetch를 위해 dependency 추가 - 값이 바뀌니 re-run
+      get(weatherRequestIdAtom(userId));
 
-      // userState selector는 async 함수이지만, 이 곳에서 await하지 않는다.
-      // recoil은 userState가 response를 resolve 할 때까지 기다린 후 이 곳에서 사용한다.
-      const user = get(userState(userId)); // userState
+      // userSelector는 async 함수이지만, 이 곳에서 await하지 않는다.
+      // recoil은 userSelector는 response를 resolve 할 때까지 기다린 후 이 곳에서 사용한다.
+      const user = get(userSelector(userId)); // userState
 
       const weather = await getWeather(user.address.city);
       return weather;
@@ -69,8 +71,10 @@ const weatherState = selectorFamily({
 const UserWeather = ({ userId }: { userId: number }) => {
   // recoil state를 중복으로 subscribe해도 문제가 없다.
   // async selector의 경우 중복 요청이 아닌 캐시된 데이터를 사용한다.
-  const user = useRecoilValue(userState(userId));
-  const weather = useRecoilValue(weatherState(userId));
+  // userSelector와 weatherSelector 모두 사용자 정보를 요청하지만, 실질적으로 요청은 1회 발생한다.
+  // userSelector에서 데이터를 fetch해오면, weatherSelector에서 캐시된 데이터를 사용한다.
+  const user = useRecoilValue(userSelector(userId));
+  const weather = useRecoilValue(weatherSelector(userId));
   const refetchWeather = useRefetchWeather(userId);
 
   return (
@@ -88,10 +92,7 @@ const UserWeather = ({ userId }: { userId: number }) => {
 // async selector가 2개 이상이어도 Suspense 컴포넌트 안에 위치한다면,
 // 2개 이상의 비동기 요청이 성공 할 때까지 fallback 컴포넌트를 표시
 const UserData = ({ userId }: { userId: number }) => {
-  // userState와 weatherState 모두 userData를 fetch하지만, 실질적으로 요청은 1회 발생한다.
-  // userState에서 데이터를 fetch해오면, weatherState에서 캐싱된 데이터를 사용한다.
-  const user = useRecoilValue(userState(userId)); // error 발생 시 error가 throw된다.
-  // const weather = useRecoilValue(weatherState(userId));
+  const user = useRecoilValue(userSelector(userId)); // error 발생 시 error가 throw된다.
 
   return (
     <div>
@@ -150,7 +151,7 @@ export const Async = () => {
         <option value="4">User 4</option>
       </Select>
       {userId !== undefined && (
-        // Error 발생 시 ErrorBoundary 하위의 컴포넌트만 unmount되고, fallback 컴포넌트가 렌더된다.
+        // Error 발생 시 ErrorBoundary 하위 컴포넌트만 unmount되고, fallback 컴포넌트가 렌더된다.
         <ErrorBoundary
           FallbackComponent={ErrorFallBack}
           onReset={() => {

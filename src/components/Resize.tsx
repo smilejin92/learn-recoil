@@ -1,6 +1,6 @@
 import { Resizable, ResizeHandle } from 'react-resizable';
 import { Handle } from './Handle';
-import { ElementStyle } from './Rectangle/Rectangle';
+import { ElementStyle } from '../atoms/types';
 
 const handlePlacements: ResizeHandle[] = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
 

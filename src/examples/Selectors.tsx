@@ -24,7 +24,7 @@ const usdAtom = atom({
 // atom을 사용하는 것과 같이 useRecoilValue(only get), useRecoilState(get, set) 사용 가능
 // 재사용 가능
 // get: return derived data from atom value
-// set: set atom value
+// set: set atom/selector value
 const eurSelector = selector<number>({
   key: 'eur',
 
@@ -82,16 +82,13 @@ export const Selectors = () => {
       </Heading>
       <InputStack>
         <CurrencyInput label="usd" amount={usd} onChange={(usd) => setUSD(usd)} />
-        {/* How do we store this particular value? Can it be stored in recoil state? */}
+        {/* usd로부터 파생된 데이터는 selector를 사용하여 관리한다. */}
         <CurrencyInput label="eur" amount={eur} onChange={(eur) => setEUR(eur)} />
       </InputStack>
       <Commission />
     </div>
   );
 };
-
-// You can ignore everything below this line.
-// It's just a bunch of UI components that we're using in this example.
 
 const InputStack: React.FC = ({ children }) => {
   return (
