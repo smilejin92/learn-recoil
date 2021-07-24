@@ -66,11 +66,7 @@ export const Info = ({ label, value }: { label: string; value?: string }) => {
       <Text fontSize="14px" fontWeight="500" mb="2px">
         {label}
       </Text>
-      {value === undefined ? (
-        <Skeleton width="100%" height="21px" />
-      ) : (
-        <Text fontSize="14px">{value}</Text>
-      )}
+      {value === undefined ? <Skeleton width="100%" height="21px" /> : <Text fontSize="14px">{value}</Text>}
     </Box>
   );
 };

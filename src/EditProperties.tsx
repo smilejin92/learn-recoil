@@ -1,17 +1,5 @@
-import {
-  InputGroup,
-  InputRightElement,
-  NumberInput,
-  NumberInputField,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import {
-  selector,
-  selectorFamily,
-  useRecoilState,
-  useRecoilValue,
-} from 'recoil';
+import { InputGroup, InputRightElement, NumberInput, NumberInputField, Text, VStack } from '@chakra-ui/react';
+import { selector, selectorFamily, useRecoilState, useRecoilValue } from 'recoil';
 import { selectedElementState } from './Canvas';
 import { elementState } from './components/Rectangle/Rectangle';
 import _ from 'lodash';
@@ -32,10 +20,7 @@ import produce from 'immer';
  */
 
 // <returnType, paramsType>
-export const editPropertyState = selectorFamily<
-  any,
-  { path: string; id: number }
->({
+export const editPropertyState = selectorFamily<any, { path: string; id: number }>({
   key: 'editProperty',
   // path: serializable value - element 객체의 특정 property를 참조하기 위한 string(ex. 'foo.bar')
   get:
@@ -63,10 +48,7 @@ export const editPropertyState = selectorFamily<
 });
 
 // selector composition (new selector based on selector)
-const editSize = selectorFamily<
-  any,
-  { dimension: 'width' | 'height'; id: number }
->({
+const editSize = selectorFamily<any, { dimension: 'width' | 'height'; id: number }>({
   key: 'editSize',
   get:
     ({ dimension, id }) =>
@@ -76,14 +58,10 @@ const editSize = selectorFamily<
   set:
     ({ dimension, id }) =>
     ({ get, set }, newValue) => {
-      const hasImage =
-        get(editPropertyState({ path: 'image', id })) !== undefined;
+      const hasImage = get(editPropertyState({ path: 'image', id })) !== undefined;
 
       if (!hasImage) {
-        set(
-          editPropertyState({ path: `style.size.${dimension}`, id }),
-          newValue,
-        );
+        set(editPropertyState({ path: `style.size.${dimension}`, id }), newValue);
         return;
       }
 
@@ -125,24 +103,12 @@ export const EditProperties = () => {
   return (
     <Card>
       <Section heading="Position">
-        <Property
-          label="Top"
-          path="style.position.top"
-          id={selectedElementId}
-        />
-        <Property
-          label="Left"
-          path="style.position.left"
-          id={selectedElementId}
-        />
+        <Property label="Top" path="style.position.top" id={selectedElementId} />
+        <Property label="Left" path="style.position.left" id={selectedElementId} />
       </Section>
       <Section heading="Size">
         <SizeProperty label="Width" dimension="width" id={selectedElementId} />
-        <SizeProperty
-          label="Height"
-          dimension="height"
-          id={selectedElementId}
-        />
+        <SizeProperty label="Height" dimension="height" id={selectedElementId} />
       </Section>
       {/* {hasImage && (
         <Section heading="Image">
@@ -164,30 +130,14 @@ const Section: React.FC<{ heading: string }> = ({ heading, children }) => {
   );
 };
 
-const Property = ({
-  label,
-  path,
-  id,
-}: {
-  label: string;
-  path: string;
-  id: number;
-}) => {
+const Property = ({ label, path, id }: { label: string; path: string; id: number }) => {
   // atomFamily처럼 함수 호출
   const [value, setValue] = useRecoilState(editPropertyState({ path, id }));
 
   return <PropertyInput label={label} value={value} onChange={setValue} />;
 };
 
-const SizeProperty = ({
-  label,
-  dimension,
-  id,
-}: {
-  label: string;
-  dimension: 'width' | 'height';
-  id: number;
-}) => {
+const SizeProperty = ({ label, dimension, id }: { label: string; dimension: 'width' | 'height'; id: number }) => {
   // atomFamily처럼 함수 호출
   const [value, setValue] = useRecoilState(editSize({ dimension, id }));
 
@@ -211,12 +161,7 @@ const PropertyInput = ({
       <InputGroup size="sm" variant="filled">
         <NumberInput value={value} onChange={(_, value) => onChange(value)}>
           <NumberInputField borderRadius="md" />
-          <InputRightElement
-            pointerEvents="none"
-            children="px"
-            lineHeight="1"
-            fontSize="12px"
-          />
+          <InputRightElement pointerEvents="none" children="px" lineHeight="1" fontSize="12px" />
         </NumberInput>
       </InputGroup>
     </div>

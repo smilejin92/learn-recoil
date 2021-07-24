@@ -14,18 +14,10 @@ const imageSizeState = selectorFamily({
   },
 });
 
-export const RectangleInner = ({
-  selected,
-  id,
-}: {
-  selected: boolean;
-  id: number;
-}) => {
+export const RectangleInner = ({ selected, id }: { selected: boolean; id: number }) => {
   const element = useRecoilValue(elementState(id));
   const imageSize = useRecoilValue(imageSizeState(element.image?.src));
-  const setSize = useSetRecoilState(
-    editPropertyState({ path: 'style.size', id }),
-  );
+  const setSize = useSetRecoilState(editPropertyState({ path: 'style.size', id }));
 
   useEffect(() => {
     if (!imageSize) return;

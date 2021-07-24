@@ -7,12 +7,7 @@ type RectangleContainerProps = {
   onSelect: () => void;
 };
 
-export const RectangleContainer: React.FC<RectangleContainerProps> = ({
-  children,
-  size,
-  position,
-  onSelect,
-}) => {
+export const RectangleContainer: React.FC<RectangleContainerProps> = ({ children, size, position, onSelect }) => {
   return (
     <Box
       position="absolute"

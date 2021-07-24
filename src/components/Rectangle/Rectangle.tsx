@@ -50,8 +50,7 @@ export const elementState = atomFamily<Element, number>({
 });
 
 export const Rectangle = ({ id }: { id: number }) => {
-  const [selectedElement, setSelectedElement] =
-    useRecoilState(selectedElementState);
+  const [selectedElement, setSelectedElement] = useRecoilState(selectedElementState);
 
   // atom family 중 id에 해당하는 atom state와 state updater를 가져옴
   const [element, setElement] = useRecoilState(elementState(id));

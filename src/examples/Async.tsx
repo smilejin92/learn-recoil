@@ -3,12 +3,7 @@ import { Button } from '@chakra-ui/react';
 import { Select } from '@chakra-ui/select';
 import { Suspense, useState } from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
-import {
-  atomFamily,
-  selectorFamily,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil';
+import { atomFamily, selectorFamily, useRecoilValue, useSetRecoilState } from 'recoil';
 import { getWeather } from './fakeAPI';
 
 /**
@@ -27,9 +22,9 @@ const userState = selectorFamily({
   // race condition을 자동으로 처리한다 (ex. fetch user1 -> fetch user2 -> fetching user1 cancelled)
   get: (userId: number) => async () => {
     // Uncaught Error: Async suspended while rendering, but no fallback UI was specified.
-    const userData = await fetch(
-      `https://jsonplaceholder.typicode.com/users/${userId}`,
-    ).then((response) => response.json());
+    const userData = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`).then((response) =>
+      response.json(),
+    );
 
     // 만약 요청에 실패 할 경우 어떻게 되는가? - ErrorBoundary 사용
     if (userId === 4) {

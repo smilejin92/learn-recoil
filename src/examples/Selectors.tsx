@@ -81,17 +81,9 @@ export const Selectors = () => {
         Currency converter
       </Heading>
       <InputStack>
-        <CurrencyInput
-          label="usd"
-          amount={usd}
-          onChange={(usd) => setUSD(usd)}
-        />
+        <CurrencyInput label="usd" amount={usd} onChange={(usd) => setUSD(usd)} />
         {/* How do we store this particular value? Can it be stored in recoil state? */}
-        <CurrencyInput
-          label="eur"
-          amount={eur}
-          onChange={(eur) => setEUR(eur)}
-        />
+        <CurrencyInput label="eur" amount={eur} onChange={(eur) => setEUR(eur)} />
       </InputStack>
       <Commission />
     </div>
@@ -108,12 +100,7 @@ const InputStack: React.FC = ({ children }) => {
       mb={4}
       spacing={4}
       divider={
-        <Box
-          border="0 !important"
-          height="40px"
-          alignItems="center"
-          display="flex"
-        >
+        <Box border="0 !important" height="40px" alignItems="center" display="flex">
           <Icon as={ArrowRight} />
         </Box>
       }

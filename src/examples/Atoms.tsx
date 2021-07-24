@@ -18,13 +18,7 @@ const DarkModeSwitch = () => {
   // setDarkMode는 darkModeAtom의 value를 update
   const [darkMode, setDarkMode] = useRecoilState(darkModeAtom);
 
-  return (
-    <input
-      type="checkbox"
-      checked={darkMode}
-      onChange={(event) => setDarkMode(event.currentTarget.checked)}
-    />
-  );
+  return <input type="checkbox" checked={darkMode} onChange={(event) => setDarkMode(event.currentTarget.checked)} />;
 };
 
 const Button = () => {

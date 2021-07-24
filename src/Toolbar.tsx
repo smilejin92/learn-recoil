@@ -10,19 +10,16 @@ export const Toolbar = () => {
   const newId = elements.length;
 
   // 아이템 추가 시, elementsState와 elementState(id)의 상태를 업데이트
-  const insertElement = useRecoilCallback(
-    ({ set }) =>
-      (type: 'rectangle' | 'image') => {
-        set(elementsState, (e) => [...e, e.length]);
+  const insertElement = useRecoilCallback(({ set }) => (type: 'rectangle' | 'image') => {
+    set(elementsState, (e) => [...e, e.length]);
 
-        if (type === 'image') {
-          set(elementState(newId), {
-            ...defaultElement,
-            image: getRandomImage(),
-          });
-        }
-      },
-  );
+    if (type === 'image') {
+      set(elementState(newId), {
+        ...defaultElement,
+        image: getRandomImage(),
+      });
+    }
+  });
 
   return (
     <VStack
