@@ -1,8 +1,9 @@
 import { InputGroup, InputRightElement, NumberInput, NumberInputField, Text, VStack } from '@chakra-ui/react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { elementPropsSelector, elementSizePropSelector, selectedElementIdAtom, hasImageSelector } from './atoms';
-import { ImageInfo, ImageInfoFallback } from './components/ImageInfo';
-import { Suspense } from 'react';
+import { elementPropsSelector, elementSizePropSelector, selectedElementIdAtom } from './atoms';
+// import { hasImageSelector } from './atoms';
+// import { ImageInfo, ImageInfoFallback } from './components/ImageInfo';
+// import { Suspense } from 'react';
 
 export const EditProperties = () => {
   // const hasImage = useRecoilValue(hasImageState);
