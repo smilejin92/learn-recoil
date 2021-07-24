@@ -16,8 +16,8 @@ import { selectedElementState } from './Canvas';
 import { elementState } from './components/Rectangle/Rectangle';
 import _ from 'lodash';
 import produce from 'immer';
-import { ImageInfo, ImageInfoFallback } from './components/ImageInfo';
-import { Suspense } from 'react';
+// import { ImageInfo, ImageInfoFallback } from './components/ImageInfo';
+// import { Suspense } from 'react';
 
 /**
  * Selector의 장점
@@ -62,16 +62,59 @@ export const editPropertyState = selectorFamily<
     },
 });
 
-const hasImageState = selector({
-  key: 'hasImage',
-  get: ({ get }) => {
-    const id = get(selectedElementState);
-    if (id === null) return;
+// selector composition (new selector based on selector)
+const editSize = selectorFamily<
+  any,
+  { dimension: 'width' | 'height'; id: number }
+>({
+  key: 'editSize',
+  get:
+    ({ dimension, id }) =>
+    ({ get }) => {
+      return get(editPropertyState({ path: `style.size.${dimension}`, id }));
+    },
+  set:
+    ({ dimension, id }) =>
+    ({ get, set }, newValue) => {
+      const hasImage =
+        get(editPropertyState({ path: 'image', id })) !== undefined;
 
-    const element = get(elementState(id));
-    return element.image !== undefined;
-  },
+      if (!hasImage) {
+        set(
+          editPropertyState({ path: `style.size.${dimension}`, id }),
+          newValue,
+        );
+        return;
+      }
+
+      const size = editPropertyState({ path: `style.size`, id });
+      const { width, height } = get(size);
+      const aspectRatio = width / height;
+
+      if (dimension === 'width') {
+        set(size, {
+          width: newValue,
+          height: Math.round(newValue / aspectRatio),
+        });
+      } else {
+        set(size, {
+          height: newValue,
+          width: Math.round(newValue * aspectRatio),
+        });
+      }
+    },
 });
+
+// const hasImageState = selector({
+//   key: 'hasImage',
+//   get: ({ get }) => {
+//     const id = get(selectedElementState);
+//     if (id === null) return;
+
+//     const element = get(elementState(id));
+//     return element.image !== undefined;
+//   },
+// });
 
 export const EditProperties = () => {
   const selectedElementId = useRecoilValue(selectedElementState);
@@ -94,14 +137,10 @@ export const EditProperties = () => {
         />
       </Section>
       <Section heading="Size">
-        <Property
-          label="Width"
-          path="style.size.width"
-          id={selectedElementId}
-        />
-        <Property
+        <SizeProperty label="Width" dimension="width" id={selectedElementId} />
+        <SizeProperty
           label="Height"
-          path="style.size.height"
+          dimension="height"
           id={selectedElementId}
         />
       </Section>
@@ -137,13 +176,40 @@ const Property = ({
   // atomFamily처럼 함수 호출
   const [value, setValue] = useRecoilState(editPropertyState({ path, id }));
 
+  return <PropertyInput label={label} value={value} onChange={setValue} />;
+};
+
+const SizeProperty = ({
+  label,
+  dimension,
+  id,
+}: {
+  label: string;
+  dimension: 'width' | 'height';
+  id: number;
+}) => {
+  // atomFamily처럼 함수 호출
+  const [value, setValue] = useRecoilState(editSize({ dimension, id }));
+
+  return <PropertyInput label={label} value={value} onChange={setValue} />;
+};
+
+const PropertyInput = ({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+}) => {
   return (
     <div>
       <Text fontSize="14px" fontWeight="500" mb="2px">
         {label}
       </Text>
       <InputGroup size="sm" variant="filled">
-        <NumberInput value={value} onChange={(_, value) => setValue(value)}>
+        <NumberInput value={value} onChange={(_, value) => onChange(value)}>
           <NumberInputField borderRadius="md" />
           <InputRightElement
             pointerEvents="none"
