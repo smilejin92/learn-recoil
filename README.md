@@ -1,24 +1,23 @@
-# Excalidraw Clone built with Recoil
+# learn-recoil
 
-This is the start of an [Exaclidraw](https://excalidraw.com/) clone that I am building with [Recoil](https://recoiljs.org/).
+## 1. Motivation
 
-It is for my **upcoming free Recoil course**, [Learn Recoil](https://learnrecoil.com/), where I will show you how to build a **full featured Excalidraw clone using Recoil** for state management.
+리액트에서 제공하는 state-management api는 몇가지 문제점이 있다.
 
-## What you'll learn to build in the course (on top of what's already in this repo)...
+* 컴포넌트 상태를 공유하기 위해서는 공통의 상위 컴포넌트에서 state를 prop으로 내려주어야한다. 이때, 컴포넌트 트리에 포함된 다른 컴포넌트에서 불필요한 렌더링이 발생 할 수 있다.
+* 위의 문제를 해결하기 위해 context를 사용 할 수 있다. 하지만 context는 하나의 상태만을 관리한다. 만약 context로 관리해야하는 상태가 많아지면, 많아진만큼 context를 생성하거나 하나의 context에 여러 상태를 객체 형태로 묶어서 관리해야한다. 이러한 context를 사용하는 컴포넌트들은 context의 상태 중 필요한 일부분만을 사용하며, 그 외 필요하지 않은 상태가 업데이트될 때에도 리렌더링된다.
+* 컴포넌트 트리 상단(state가 존재하는 영역)과 하단(state가 사용되는 영역)을 code-split하기 어렵다.
 
--   🔄 Rotating shapes
--   ✌️ Multi-select
--   🔵 More kinds of shapes
--   💾 Saving a drawing to a file and opening it again
--   🌍 Saving the drawing to a server (shareable drawing URL)
--   🌄 Loading content (e.g. images) from an API with Recoil and Suspense
--   👯‍♂️ Enabling concurrent mode
--   🧪 Adding full test coverage
--   🤔 Your own dev tools for debugging
--   🔑 Authentication
--   🏃 Performance debugging, testing, and improvement
--   And more...
+&nbsp;  
 
-**Have any other suggestions? Tweet or DM me [@jacques_codes](https://twitter.com/jacques_codes).**
+Recoil은 위 문제를 해결하기 위해 탄생하였으며, Recoil에서 제공하는 api는 최대한 "리액트스럽게" 설계되어있다. Recoil의 특징은 아래와 같다.
 
-## Sign up for the Recoil course here 👉 https://learnrecoil.com/ 👈 today!
+* boilerplate-free API
+* Concurrent 모드를 포함한 React의 새로운 기능들과 호환될 수 있다.
+* 상태는 확장 가능하며, 작성된 상태는 컴포넌트에 종속되어있지 않다. 즉, code-split이 가능하다.
+* 작성한 상태를 기반으로 새로운 데이터(derived data)를 생성 할 수 있다. 새로운 데이터를 생성하는 로직을 컴포넌트에 작성하지 않는다.
+* derived data는 비동기적으로 생성될 수 있으며, 이를 사용하는 컴포넌트에 별다른 셋업을 할 필요가 없다.
+* 하위 호환성을 유지하는 persisted state를 구현하기가 비교적 간편하다. 앱에 변경사항이 생겨도 앱 상태를 유지 할 수 있다.
+
+&nbsp;  
+
