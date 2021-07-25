@@ -4,22 +4,22 @@
 
 리액트에서 제공하는 state-management api는 몇가지 문제점이 있다.
 
-* 컴포넌트 상태를 공유하기 위해서는 공통의 상위 컴포넌트에서 state를 prop으로 내려주어야한다. 이때, 컴포넌트 트리에 포함된 다른 컴포넌트에서 불필요한 렌더링이 발생 할 수 있다.
-* 위의 문제를 해결하기 위해 context를 사용 할 수 있다. 하지만 context는 하나의 상태만을 관리한다. 만약 context로 관리해야하는 상태가 많아지면, 많아진만큼 context를 생성하거나 하나의 context에 여러 상태를 객체 형태로 묶어서 관리해야한다. 이러한 context를 사용하는 컴포넌트들은 context의 상태 중 필요한 부분만을 사용하며, 그 외 필요하지 않은 상태가 업데이트될 때에도 리렌더링된다.
-* 컴포넌트 트리 상단(state가 존재하는 영역)과 하단(state가 사용되는 영역)을 code-split하기 어렵다.
+- 컴포넌트 상태를 공유하기 위해서는 공통의 상위 컴포넌트에서 state를 prop으로 내려주어야한다. 이때, 컴포넌트 트리에 포함된 다른 컴포넌트에서 불필요한 렌더링이 발생 할 수 있다.
+- 위의 문제를 해결하기 위해 context를 사용 할 수 있다. 하지만 context는 하나의 상태만을 관리한다. 만약 context로 관리해야하는 상태가 많아지면, 많아진만큼 context를 생성하거나 하나의 context에 여러 상태를 객체 형태로 묶어서 관리해야한다. 이러한 context를 사용하는 컴포넌트들은 context의 상태 중 필요한 부분만을 사용하며, 그 외 필요하지 않은 상태가 업데이트될 때에도 리렌더링된다.
+- 컴포넌트 트리 상단(state가 존재하는 영역)과 하단(state가 사용되는 영역)을 code-split하기 어렵다.
 
-&nbsp;  
+&nbsp;
 
 Recoil은 위 문제를 해결하기 위해 탄생하였으며, Recoil에서 제공하는 api는 최대한 "리액트스럽게" 설계되어있다. Recoil의 특징은 아래와 같다.
 
-* boilerplate-free API: Recoil state는 React local state(ex. useState)와 같이 간단한 get/set 인터페이스를 가진다.
-* React의 새로운 기능(ex. Concurrent 모드)과 호환될 수 있다.
-* 상태는 확장 가능하며, 컴포넌트에 종속되어있지 않다. 즉, code-split이 가능하다.
-* 상태를 기반으로 파생 데이터(derived data)를 생성 할 수 있다.
-* 파생 데이터는 비동기적으로 생성될 수 있으며, 이를 사용하는 컴포넌트에 별다른 셋업을 하지 않아도된다.
-* 앱에서 사용되는 모든 상태를 쉽게 유지(persist) 할 수 있다.
+- boilerplate-free API: Recoil state는 React local state(ex. useState)와 같이 간단한 get/set 인터페이스를 가진다.
+- React의 새로운 기능(ex. Concurrent 모드)과 호환될 수 있다.
+- 상태는 확장 가능하며, 컴포넌트에 종속되어있지 않다. 즉, code-split이 가능하다.
+- 상태를 기반으로 파생 데이터(derived data)를 생성 할 수 있다.
+- 파생 데이터는 비동기적으로 생성될 수 있으며, 이를 사용하는 컴포넌트에 별다른 셋업을 하지 않아도된다.
+- 앱에서 사용되는 모든 상태를 쉽게 유지(persist) 할 수 있다.
 
-&nbsp;  
+&nbsp;
 
 ## 2. Core Concepts
 
@@ -28,29 +28,24 @@ Recoil state를 사용하기 위해서는 컴포넌트 트리 상단에 `RecoilR
 ```tsx
 import { RecoilRoot } from 'recoil';
 
-ReactDOM.render(
-  <RecoilRoot>
-    {/* ... */}
-  </RecoilRoot>,
-  document.getElementById('root'),
-);
+ReactDOM.render(<RecoilRoot>{/* ... */}</RecoilRoot>, document.getElementById('root'));
 ```
 
-&nbsp;  
+&nbsp;
 
 ### Atoms
 
-* 상태의 단위
-* 업데이트 될 수 있고, 구독 될 수 있다.
-* 새로운 상태로 업데이트되면, 해당 Atom을 구독하는 컴포넌트는 새로운 상태를 가지고 리렌더링된다.
-* 동적으로 생성될 수 있다.
-* React local state를 사용하는 문맥에서 동일하게 사용될 수 있다.
-* 특정 Atom을 구독하는 모든 컴포넌트들은 상태를 공유한다.
-* Globally unique key를 가지며, key의 값은 serialize될 수 있어야한다.
-* default value가 필요하다.
-* atom의 상태를 `useRecoilValue`로 가져올 수 있다.
-* atom의 상태와 상태 업데이터를 `useRecoilState`로 가져올 수 있다.
-* atom의 상태 업데이터를 `useSetRecoilState`로 가져올 수 있다.
+- 상태의 단위
+- 업데이트 될 수 있고, 구독 될 수 있다.
+- 새로운 상태로 업데이트되면, 해당 Atom을 구독하는 컴포넌트는 새로운 상태를 가지고 리렌더링된다.
+- 동적으로 생성될 수 있다.
+- React local state를 사용하는 문맥에서 동일하게 사용될 수 있다.
+- 특정 Atom을 구독하는 모든 컴포넌트들은 상태를 공유한다.
+- Globally unique key를 가지며, key의 값은 serialize될 수 있어야한다.
+- default value가 필요하다.
+- atom의 상태를 `useRecoilValue`로 가져올 수 있다.
+- atom의 상태와 상태 업데이터를 `useRecoilState`로 가져올 수 있다.
+- atom의 상태 업데이터를 `useSetRecoilState`로 가져올 수 있다.
 
 ```tsx
 import { atom } from 'recoil';
@@ -68,14 +63,8 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 const DarkModeSwitch = () => {
   // setDarkMode는 darkModeState를 update
   const [darkMode, setDarkMode] = useRecoilState(darkModeState);
-  
-  return (
-    <input
-      type="checkbox"
-      checked={darkMode}
-      onChange={(event) => setDarkMode(event.currentTarget.checked)}
-    />
-  );
+
+  return <input type="checkbox" checked={darkMode} onChange={(event) => setDarkMode(event.currentTarget.checked)} />;
 };
 
 const Text = () => {
@@ -105,19 +94,19 @@ export const AtomExample = () => {
 };
 ```
 
-&nbsp;  
+&nbsp;
 
 ### Selectors
 
-* atom 혹은 selector로부터 파생된 데이터의 단위(**pure function**)
-* 업데이트 될 수 있고, 구독 될 수 있다.
-* 새로운 상태로 업데이트되면, 해당 selector를 구독하는 컴포넌트는 새로운 상태를 가지고 리렌더링된다.
-* React local state를 사용하는 문맥에서 동일하게 사용될 수 있다.
-* Globally unique key를 가지며, key의 값은 serialize될 수 있어야한다.
-* get(must), set(optional) 메소드를 정의 할 수 있다.
-* selector의 데이터를 `useRecoilValue`로 가져올 수 있다.
-* selector의 데이터와 데이터 업데이터를 `useRecoilState`로 가져올 수 있다. (set 메소드가 작성되어 있는 selector만 해당)
-* selector의 상태 업데이터를 `useSetRecoilState`로 가져올 수 있다.
+- atom 혹은 selector로부터 파생된 데이터의 단위(**pure function**)
+- 업데이트 될 수 있고, 구독 될 수 있다.
+- 새로운 상태로 업데이트되면, 해당 selector를 구독하는 컴포넌트는 새로운 상태를 가지고 리렌더링된다.
+- React local state를 사용하는 문맥에서 동일하게 사용될 수 있다.
+- Globally unique key를 가지며, key의 값은 serialize될 수 있어야한다.
+- get(must), set(optional) 메소드를 정의 할 수 있다.
+- selector의 데이터를 `useRecoilValue`로 가져올 수 있다.
+- selector의 데이터와 데이터 업데이터를 `useRecoilState`로 가져올 수 있다. (set 메소드가 작성되어 있는 selector만 해당)
+- selector의 상태 업데이터를 `useSetRecoilState`로 가져올 수 있다.
 
 ```tsx
 import { atom, selector, useRecoilState } from 'recoil';
@@ -158,31 +147,23 @@ export const SelectorExample = () => {
 
   return (
     <div>
-      <CurrencyInput
-        label="usd"
-        amount={usd}
-        onChange={(usd) => setUSD(usd)}
-      />
-      <CurrencyInput
-        label="eur"
-        amount={eur}
-        onChange={(eur) => setEUR(eur)}
-      />
+      <CurrencyInput label="usd" amount={usd} onChange={(usd) => setUSD(usd)} />
+      <CurrencyInput label="eur" amount={eur} onChange={(eur) => setEUR(eur)} />
     </div>
   );
 };
 ```
 
-&nbsp;  
+&nbsp;
 
 ### AtomFamily
 
 여러 아이템에 대한 상태를 하나의 Context로 관리하면, 각 아이템에 대한 상태를 isolate 시킬 수 없다. 즉, 하나의 아이템에 대한 상태를 업데이트하면, 모든 아이템의 상태도 업데이트된다 (불필요한 렌더링 발생). `atomFamily`를 사용하면 각 아이템에 대한 atom이 생성되며, 해당 아이템이 업데이트 될 경우, 그 아이템의 상태를 구독하는 컴포넌트만 업데이트, 리렌더링된다.
 
- * elementAtom(1) -> atom for element 1
- * elementAtom(2) -> atom for element 2
- * elementAtom(3) -> atom for element 3
- * elementAtom(4) -> atom for element 4
+- elementAtom(1) -> atom for element 1
+- elementAtom(2) -> atom for element 2
+- elementAtom(3) -> atom for element 3
+- elementAtom(4) -> atom for element 4
 
 ```tsx
 import { atomFamily } from 'recoil';
@@ -201,7 +182,7 @@ export const elementState = atomFamily<Element, number>({
         height: 200,
       },
     },
-  }
+  },
 });
 
 const AtomFamilyExample = ({ id }: { id: number }) => {
@@ -209,10 +190,7 @@ const AtomFamilyExample = ({ id }: { id: number }) => {
   const [element, setElement] = useRecoilState(elementState(id));
 
   return (
-    <RectangleContainer
-      position={element.style.position}
-      size={element.style.size}
-    >
+    <RectangleContainer position={element.style.position} size={element.style.size}>
       <Resize
         position={element.style.position}
         size={element.style.size}
@@ -228,7 +206,7 @@ const AtomFamilyExample = ({ id }: { id: number }) => {
 };
 ```
 
-&nbsp;  
+&nbsp;
 
 ### SelectorFamily
 
@@ -259,7 +237,7 @@ export const elementState = atomFamily<Element, number>({
         height: 200,
       },
     },
-  }
+  },
 });
 
 /**
@@ -271,7 +249,7 @@ export const selectedElementState = selector<Element | undefined>({
   get: ({ get }) => {
     const selectedElementId = get(selectedElementIdState);
     if (selectedElementId == null) return;
-    
+
     return get(elementState(selectedElementId));
   },
   set: ({ get, set }, newElement) => {
@@ -287,39 +265,46 @@ export const selectedElementState = selector<Element | undefined>({
 
 ```tsx
 // selectorFamily를 사용하여 위 selectedElementState를 보완
-export const elementPropsState = selectorFamily<any, {
-  propPath: string;
-  id: number;
-}>({
+export const elementPropsState = selectorFamily<
+  any,
+  {
+    propPath: string;
+    id: number;
+  }
+>({
   key: 'elementProps',
-  get: (params) => ({ get }) => {
-    // propPath와 요소의 id를 전달 받는다.
-    const { propPath, id } = params;
-    
-    // 전달된 id에 해당하는 요소 정보를 취득한다.
-    const element = get(elementAtom(id));
-    
-    // 전달된 propPath에 해당하는 값을 반환한다.
-    return _.get(element, propPath);
-  },
-  set: (params) => ({ get, set }, newValue) => {
-    // propPath와 요소의 id를 전달 받는다.
-    const { propPath, id } = params;
-    
-    // 전달된 id에 해당하는 요소 정보를 취득한다.
-    const element = get(elementAtom(id));
+  get:
+    (params) =>
+    ({ get }) => {
+      // propPath와 요소의 id를 전달 받는다.
+      const { propPath, id } = params;
 
-    const newElement = produce(element, (draft) => {
-      _.set(draft, propPath, newValue);
-    });
-	
-    // 전달된 id에 해당하는 요소 정보를 업데이트한다.
-    set(elementAtom(id), newElement);
-  },
+      // 전달된 id에 해당하는 요소 정보를 취득한다.
+      const element = get(elementAtom(id));
+
+      // 전달된 propPath에 해당하는 값을 반환한다.
+      return _.get(element, propPath);
+    },
+  set:
+    (params) =>
+    ({ get, set }, newValue) => {
+      // propPath와 요소의 id를 전달 받는다.
+      const { propPath, id } = params;
+
+      // 전달된 id에 해당하는 요소 정보를 취득한다.
+      const element = get(elementAtom(id));
+
+      const newElement = produce(element, (draft) => {
+        _.set(draft, propPath, newValue);
+      });
+
+      // 전달된 id에 해당하는 요소 정보를 업데이트한다.
+      set(elementAtom(id), newElement);
+    },
 });
 ```
 
-&nbsp;  
+&nbsp;
 
 ### Async Selector
 
@@ -393,7 +378,6 @@ const ErrorFallBack = ({ error, resetErrorBoundary }: FallbackProps) => {
   );
 };
 
-
 export const Async = ({ id }: { id: number }) => {
   return (
     <>
@@ -416,7 +400,6 @@ export const Async = ({ id }: { id: number }) => {
     </>
   );
 };
-
 ```
 
-&nbsp;  
+&nbsp;
