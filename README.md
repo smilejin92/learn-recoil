@@ -1,5 +1,7 @@
 # learn-recoil
 
+> 이 곳에서 사용한 코드는 모두 [https://learnrecoil.com](https://learnrecoil.com/)에서 제공된 코드입니다.
+
 ## 1. Motivation
 
 리액트에서 제공하는 state-management api는 몇가지 문제점이 있다.
